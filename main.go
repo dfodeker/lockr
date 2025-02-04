@@ -24,15 +24,39 @@ type Config struct {
 }
 
 func main() {
-
 	if len(os.Args) > 1 {
-		subcmd := os.Args[1]
-		switch subcmd {
-		case "init":
-			initCmd()
-		default:
-			err := fmt.Errorf("Unknown Command :%s", subcmd)
-			fmt.Println(err.Error())
+		// fullCmd := strings.Join(os.Args[1:], " ")
+	Loop:
+		for i := 1; i < len(os.Args); i++ {
+			subCmd := os.Args[i]
+			switch subCmd {
+			case "init":
+				initCmd()
+			case "env":
+				//flag check
+				// if strings.Contains(fullCmd, "-c") {
+				// 	fmt.Println("using the -c flag")
+				// }
+
+				if i+2 < len(os.Args) {
+					switch os.Args[i+1] {
+					case "create":
+						envCmd(os.Args[i+2])
+					case "switch":
+						fmt.Println("switch env")
+					default:
+						fmt.Printf("Error: 'create' requires another argument")
+					}
+
+				} else {
+					fmt.Printf("Error: 'create' requires an argument")
+				}
+				break Loop
+			default:
+				err := fmt.Errorf("Unknown Command :%s", subCmd)
+				fmt.Println(err.Error())
+			}
+
 		}
 	} else {
 		msg := fmt.Sprintf("Welcome to Lockr! Use 'lockr init' to get started ")
@@ -46,10 +70,11 @@ func main() {
 // handle errors
 func initCmd() (string, error) {
 	cwd, err := os.Getwd()
-	successMsg := fmt.Sprintf("Initialized Lockr 🚀 in %v", cwd)
+
 	if err != nil {
 		log.Fatal("Failed to get file path")
 	}
+	successMsg := fmt.Sprintf("Initialized Lockr 🚀 in %v", cwd)
 	if _, err := os.Stat(lockrDir); err == nil {
 		// for redabliity file = dir,
 
@@ -60,14 +85,11 @@ func initCmd() (string, error) {
 		if err != nil {
 			log.Fatal("Failed to reinitialize lockr in ", cwd)
 		}
-
-		// createFile(cwd)
-		// createConfig()
 		fmt.Printf("Reinitialized existing Lockr vault in %v\n", cwd)
 		reinitMsg := fmt.Sprintf("Reinitialized existing Lockr vault in %v\n", cwd)
 		successMsg = reinitMsg
 	}
-	createFile(cwd)
+	createFile(lockrDir)
 	createConfig()
 	appendGitIgnore()
 	return successMsg, nil
@@ -98,13 +120,13 @@ func createConfig() error {
 	return nil
 
 }
-func createFile(s string) (string, error) {
-	err := os.MkdirAll(lockrDir, 0755)
+func createFile(folderName string) (string, error) {
+	err := os.MkdirAll(folderName, 0755)
 	if err != nil {
 		log.Fatal(err)
 		return "", err
 	}
-	msg := fmt.Sprintf("File created in %v", s)
+	msg := fmt.Sprintf("Created %v vault directory", folderName)
 	return msg, nil
 }
 
@@ -136,3 +158,18 @@ func appendGitIgnore() error {
 	return nil
 
 }
+
+// Creates a new environment (similar to creating a new branch in Git).
+// (lockr env create <environment-name>)
+func envCmd(envName string) (string, error) {
+	fmt.Printf("%v", envName)
+	filepath := filepath.Join(lockrDir, "env", envName)
+	createFile(filepath)
+	return "", nil
+}
+
+// ```bash
+// lockr env create <environment-name>
+// ```
+// . Create and Switch to a New Environment
+// This command creates a new environment and switches to it immediately (similar to git checkout -b).

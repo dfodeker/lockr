@@ -34,3 +34,41 @@ lockr init
 ```
 This creates a hidden .lockr-vault directory and updates your .gitignore file to exclude it from version control.
 
+
+
+1. Create a New Environment
+This command creates a new environment (similar to creating a new branch in Git).
+Command:
+        
+```bash
+lockr env create <environment-name>
+```
+. Create and Switch to a New Environment
+This command creates a new environment and switches to it immediately (similar to git checkout -b).
+
+```bash
+lockr env switch -c <environment-name>
+```
+
+
+3. Switch to an Existing Environment
+This command switches to an existing environment (similar to git checkout).
+
+Command:
+```bash
+lockr env switch <environment-name>
+```
+
+4. Check the Current Environment
+This command displays the currently active environment (similar to git branch showing the current branch).
+
+```bash
+lockr env current
+```
+
+6. Delete an Environment
+This command deletes an environment (similar to git branch -d).
+
+```bash
+lockr env delete <environment-name>
+```
