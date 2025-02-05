@@ -52,6 +52,8 @@ func main() {
 					fmt.Printf("Error: 'create' requires an argument")
 				}
 				break Loop
+			case "list":
+				listcmd()
 			default:
 				err := fmt.Errorf("Unknown Command :%s", subCmd)
 				fmt.Println(err.Error())
@@ -191,8 +193,15 @@ func envCmd(envName string) (string, error) {
 		return "", fmt.Errorf("unable to write updated config file: %w", err)
 	}
 
-	filepath := filepath.Join(lockrDir, "env", envName)
-	createFile(filepath)
+	folderpath := filepath.Join(lockrDir, "env", envName)
+	createFile(folderpath)
+
+	//localEnvFileName:= filepath.Join(lockrDir,"env",envName,".env")
+	localEnvFileName := filepath.Join(lockrDir, "env", envName, ".env")
+	err = os.WriteFile(localEnvFileName, []byte{}, 0644)
+	if err != nil {
+		return "", fmt.Errorf("unable to write env file: %w", err)
+	}
 	return fmt.Sprintf("Environment '%s' created successfully", envName), nil
 }
 
@@ -202,6 +211,7 @@ func envCmd(envName string) (string, error) {
 // . Create and Switch to a New Environment
 // This command creates a new environment and switches to it immediately (similar to git checkout -b).
 
+// Switches to an already created enviroment
 func switchCmd(envName string) (string, error) {
 	//return early if there isnt a file in env
 	//filePath.Join(lockrDir,"env",envName)
@@ -217,7 +227,7 @@ func switchCmd(envName string) (string, error) {
 	var config Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		return "", fmt.Errorf("unable to parse config file: %w", err)
+		return "", fmt.Errorf("Unable to parse config file: %w", err)
 	}
 
 	if config.ActiveEnv == envName {
@@ -235,5 +245,23 @@ func switchCmd(envName string) (string, error) {
 		return "", fmt.Errorf("unable to write updated config file: %w", err)
 	}
 	fmt.Printf("updated env\n")
+	return "", nil
+}
+
+func listcmd() (string, error) {
+	configPath := filepath.Join(lockrDir, configFile)
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("unable to load config file: %w", err)
+	}
+	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return "", fmt.Errorf("Unable to parse config file: %w", err)
+	}
+	for _, env := range config.Enviroments {
+		fmt.Printf("%v\n", env)
+	}
+
 	return "", nil
 }
