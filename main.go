@@ -19,7 +19,7 @@ const configFile string = "config.json"
 const gitIgnore string = ".gitignore"
 
 type Config struct {
-	Enviroments []string `json:"enviroments"`
+	Enviroments []string `json:"environments"`
 	ActiveEnv   string   `json:"active_env"`
 }
 
@@ -43,7 +43,7 @@ func main() {
 					case "create":
 						envCmd(os.Args[i+2])
 					case "switch":
-						fmt.Println("switch env")
+						switchCmd(os.Args[i+2])
 					default:
 						fmt.Printf("Error: 'create' requires another argument")
 					}
@@ -162,10 +162,38 @@ func appendGitIgnore() error {
 // Creates a new environment (similar to creating a new branch in Git).
 // (lockr env create <environment-name>)
 func envCmd(envName string) (string, error) {
-	fmt.Printf("%v", envName)
+
+	configPath := filepath.Join(lockrDir, configFile)
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("unable to load config file: %w", err)
+	}
+	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse config file: %w", err)
+	}
+	for _, env := range config.Enviroments {
+
+		if env == envName {
+			fmt.Printf("'%s' enviroment already exists \n", envName)
+			return "", fmt.Errorf("enviroment '%s' already exists \n", envName)
+		}
+	}
+	config.Enviroments = append(config.Enviroments, envName)
+
+	updatedData, err := json.MarshalIndent(config, "", " ")
+	if err != nil {
+		return "", fmt.Errorf("unable to marshal update config %w", err)
+	}
+	err = os.WriteFile(configPath, updatedData, 0644)
+	if err != nil {
+		return "", fmt.Errorf("unable to write updated config file: %w", err)
+	}
+
 	filepath := filepath.Join(lockrDir, "env", envName)
 	createFile(filepath)
-	return "", nil
+	return fmt.Sprintf("Environment '%s' created successfully", envName), nil
 }
 
 // ```bash
@@ -173,3 +201,39 @@ func envCmd(envName string) (string, error) {
 // ```
 // . Create and Switch to a New Environment
 // This command creates a new environment and switches to it immediately (similar to git checkout -b).
+
+func switchCmd(envName string) (string, error) {
+	//return early if there isnt a file in env
+	//filePath.Join(lockrDir,"env",envName)
+	envPath := filepath.Join(lockrDir, "env", envName)
+	if _, err := os.Stat(envPath); os.IsNotExist(err) {
+		return "", fmt.Errorf("unable to locate enviroment: %w", err)
+	}
+	configPath := filepath.Join(lockrDir, configFile)
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("unable to load config file: %w", err)
+	}
+	var config Config
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse config file: %w", err)
+	}
+
+	if config.ActiveEnv == envName {
+		fmt.Printf("environment '%s' is already the active environment", envName)
+		return "", fmt.Errorf("environment '%s' is already the active environment", envName)
+	}
+	config.ActiveEnv = envName
+	updatedData, err := json.MarshalIndent(config, "", " ")
+	if err != nil {
+		return "", fmt.Errorf("unable to marshal update config %w", err)
+	}
+
+	err = os.WriteFile(configPath, updatedData, 0644)
+	if err != nil {
+		return "", fmt.Errorf("unable to write updated config file: %w", err)
+	}
+	fmt.Printf("updated env\n")
+	return "", nil
+}
