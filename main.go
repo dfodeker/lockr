@@ -53,7 +53,7 @@ func main() {
 				}
 				break Loop
 			case "list":
-				listcmd()
+				listCmd()
 			default:
 				err := fmt.Errorf("Unknown Command :%s", subCmd)
 				fmt.Println(err.Error())
@@ -193,8 +193,8 @@ func envCmd(envName string) (string, error) {
 		return "", fmt.Errorf("unable to write updated config file: %w", err)
 	}
 
-	folderpath := filepath.Join(lockrDir, "env", envName)
-	createFile(folderpath)
+	folderPath := filepath.Join(lockrDir, "env", envName)
+	createFile(folderPath)
 
 	//localEnvFileName:= filepath.Join(lockrDir,"env",envName,".env")
 	localEnvFileName := filepath.Join(lockrDir, "env", envName, ".env")
@@ -248,7 +248,7 @@ func switchCmd(envName string) (string, error) {
 	return "", nil
 }
 
-func listcmd() (string, error) {
+func listCmd() (string, error) {
 	configPath := filepath.Join(lockrDir, configFile)
 	data, err := os.ReadFile(configPath)
 	if err != nil {
