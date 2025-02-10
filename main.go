@@ -108,7 +108,7 @@ func createConfig() error {
 			ActiveEnv:   "default",
 		}
 		data, err := json.MarshalIndent(config, "", "  ")
-		if err != nil {
+		if err != nil { 
 			//meaning error happs
 			log.Fatal("Error Occured during config file creation")
 			return err
@@ -160,6 +160,7 @@ func appendGitIgnore() error {
 	return nil
 
 }
+//=>
 
 // Creates a new environment (similar to creating a new branch in Git).
 // (lockr env create <environment-name>)

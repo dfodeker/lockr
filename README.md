@@ -43,7 +43,7 @@ Command:
 ```bash
 lockr env create <environment-name>
 ```
-. Create and Switch to a New Environment
+2. Create and Switch to a New Environment
 This command creates a new environment and switches to it immediately (similar to git checkout -b).
 
 ```bash
