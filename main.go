@@ -10,11 +10,6 @@ import (
 // const lockrDir string = ".lockr"
 
 // Name of config file for Lockr
-const ConfigFile string = "config.json"
-
-const GitIgnore string = ".gitignore"
-
-const LockrDir string = ".lockr"
 
 var usage = `Usage lockr command [options] a simple tool to allow you manage the differnt env's within a project without a need for multiple .env files in a project`
 
@@ -31,9 +26,10 @@ func main() {
 	default:
 		usageAndExit(fmt.Sprintf("Lockr: '%s' is not a lockr command.\n", os.Args[1]))
 	}
+
 	cmd.Init(os.Args[2:])
 	cmd.Run()
-	usageAndExit("")
+	// usageAndExit("")
 }
 
 func usageAndExit(msg string) {
