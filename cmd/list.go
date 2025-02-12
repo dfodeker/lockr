@@ -10,6 +10,7 @@ import (
 )
 
 var listUsage = `List all currently avaible enviroments. Usage: brief list Options: `
+
 var listFunc = func(cmd *Command, args []string) {
 	configPath := filepath.Join(LockrDir, ConfigFile)
 	data, err := os.ReadFile(configPath)
