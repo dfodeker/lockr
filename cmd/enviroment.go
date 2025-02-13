@@ -25,6 +25,18 @@ Examples:
   lockr env switch myenv      Switch to the environment named 'myenv'.`
 
 var envFunc = func(cmd *Command, args []string) {
+
+	if len(args) < 1 {
+		fmt.Fprintln(os.Stderr, "Error: No subcommand provided.")
+		cmd.flags.Usage()
+		os.Exit(1)
+	}
+	if len(args) >= 1 {
+		fmt.Printf("Subcommands %v\n", args)
+
+		os.Exit(0)
+	}
+
 	configPath := filepath.Join(LockrDir, ConfigFile)
 	data, err := os.ReadFile(configPath)
 	if err != nil {
@@ -53,7 +65,7 @@ func EnviromentCommand() *Command {
 		Execute: envFunc,
 	}
 
-	cmd.flags.BoolVar(&nicely, "nicely", false, "")
+	cmd.flags.BoolVar(&nicely, "nicely", false, "Print output in a friendly format")
 	cmd.flags.Usage = func() {
 		fmt.Fprintln(os.Stderr, envUsage)
 	}

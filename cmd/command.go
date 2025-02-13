@@ -18,7 +18,7 @@ func (c *Command) Called() bool {
 }
 
 func (c *Command) Run() {
-	c.Execute(c, flag.Args())
+	c.Execute(c, c.flags.Args())
 }
 
 const ConfigFile string = "config.json"
