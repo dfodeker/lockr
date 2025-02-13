@@ -26,13 +26,23 @@ Examples:
 
 var envFunc = func(cmd *Command, args []string) {
 
-	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "Error: No subcommand provided.")
-		cmd.flags.Usage()
-		os.Exit(1)
-	}
 	if len(args) >= 1 {
-		fmt.Printf("Subcommands %v\n", args)
+		if nicely {
+			fmt.Printf("printing nicely\n")
+		}
+		subcommand := args[0]
+		switch subcommand {
+		case "create":
+			CreateCommand()
+
+		case "switch":
+			fmt.Printf("Switch logic not implemented yet\n")
+
+		default:
+			fmt.Printf("'%v' is not a lockr command. See 'lockr --help'.\n\n", subcommand)
+			cmd.flags.Usage()
+			os.Exit(1)
+		}
 
 		os.Exit(0)
 	}
@@ -50,12 +60,18 @@ var envFunc = func(cmd *Command, args []string) {
 		os.Exit(1)
 	}
 
-	if nicely {
-		fmt.Printf("Active Env: %s\n", config.ActiveEnv)
-	} else {
-		fmt.Printf("Active enviroment  is '%s'\n", config.ActiveEnv)
+	if len(args) < 1 {
+		if nicely {
+			fmt.Printf("Active Env: %s\n", config.ActiveEnv)
+		} else {
+			fmt.Printf("Active enviroment  is '%s'\n", config.ActiveEnv)
+		}
+		os.Exit(0)
+		// fmt.Fprintln(os.Stderr, "Error: No subcommand provided.")
+		cmd.flags.Usage()
+
 	}
-	os.Exit(0)
+
 }
 
 func EnviromentCommand() *Command {
