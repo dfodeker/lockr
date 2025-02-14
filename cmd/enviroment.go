@@ -30,10 +30,17 @@ var envFunc = func(cmd *Command, args []string) {
 		if nicely {
 			fmt.Printf("printing nicely\n")
 		}
+
 		subcommand := args[0]
+
 		switch subcommand {
 		case "create":
-			CreateCommand()
+			if len(args) < 2 {
+				fmt.Fprintln(os.Stderr, "Error: No environment name provided for 'create'.")
+				os.Exit(1)
+			}
+			positionalArg := args[1]
+			CreateCommand(positionalArg)
 
 		case "switch":
 			fmt.Printf("Switch logic not implemented yet\n")
