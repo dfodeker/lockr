@@ -51,8 +51,8 @@ func CreateCommand(envName string) {
 		fmt.Fprintf(os.Stderr, "Unable to write env file: %v", err)
 
 	}
-	fmt.Sprintf("Environment '%s' created successfully", envName)
-	msg := fmt.Sprintf("Our implementation of the create command will follow\n")
+	msg := fmt.Sprintf("Environment '%s' created successfully", envName)
+
 	fmt.Print(msg)
 
 }

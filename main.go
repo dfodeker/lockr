@@ -24,6 +24,8 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "init":
+		cmd = command.InitCommand()
 	case "version":
 		cmd = command.VersionCommand()
 	case "list":
