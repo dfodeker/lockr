@@ -2,9 +2,12 @@ package command
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	config "lockr/config"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -43,6 +46,30 @@ func appendGitIgnore() error {
 	}
 	data.WriteString("\n" + LockrDir + "\n")
 	// fmt.Println("Successfully added to git ignore")
+	return nil
+
+}
+
+func createConfig() error {
+	configPath := filepath.Join(LockrDir, ConfigFile)
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		//should not overwrite file
+		config := config.Config{
+			Enviroments: []string{"default"},
+			ActiveEnv:   "default",
+		}
+		data, err := json.MarshalIndent(config, "", "  ")
+		if err != nil {
+			//meaning error happs
+			log.Fatal("Error Occured during config file creation")
+			return err
+		}
+		if err := os.WriteFile(configPath, data, 0644); err != nil {
+			log.Fatal("Error Occured during config file write")
+			return err
+		}
+
+	}
 	return nil
 
 }
